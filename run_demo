@@ -40,20 +40,36 @@ echo "Start Slave on both Servers..."
 mysql -uroot -proot -h $MYSQL01_IP -AN -e "start slave;"
 mysql -uroot -proot -h $MYSQL02_IP -AN -e "start slave;"
 
-echo "Create database 'omgponies' on MySQL01..."
+echo "Create database 'wordpress' on MySQL01..."
 
-mysql -uroot -proot -h $MYSQL01_IP -e "create database omgponies;"
+mysql -uroot -proot -h $MYSQL01_IP -e "create database wordpress;"
 
 echo "Wait 2 seconds, then check that it exists on MySQL02..."
 
 sleep 2
 mysql -uroot -proot -h $MYSQL02_IP -e "show databases;"
 
-echo "Okay,  now for haproxy"
+echo "Okay,  now lets stick a HAProxy in front of them..."
 
 mysql -uroot -proot -h $MYSQL01_IP -AN -e "GRANT USAGE ON *.* TO 'haproxy'@'%';"
 
-HAPROXY_MYSQL=$(docker run -d paulczar/haproxy-mysql /haproxy/start "server Primary $MYSQL01_IP:3306" "server Secondary $MYSQL02_IP:3306 backup")
+HAPROXY_MYSQL=$(docker run -d paulczar/haproxy-mysql /haproxy/start "server Primary $MYSQL01_IP:3306" "server Secondary $MYSQL02_IP:3306")
 HAPROXY_MYSQL_IP=$(docker inspect $HAPROXY_MYSQL | grep IPAd | awk -F'"' '{print $4}')
 
 echo HAPROXY IS $HAPROXY_MYSQL_IP
+
+echo "Check our haproxy works..."
+echo "should show alternating server_id"
+
+mysql -uroot -proot -h $HAPROXY_MYSQL_IP -e 'show variables like "server_id" \G'
+mysql -uroot -proot -h $HAPROXY_MYSQL_IP -e 'show variables like "server_id" \G'
+mysql -uroot -proot -h $HAPROXY_MYSQL_IP -e 'show variables like "server_id" \G'
+mysql -uroot -proot -h $HAPROXY_MYSQL_IP -e 'show variables like "server_id" \G'
+
+echo "Cool.   Now a wordpress ..."
+
+
+WORDPRESS1=$(docker run -d paulczar/apache2-wordpress /var/www/start $HAPROXY_MYSQL_IP)
+WORDPRESS1_IP=$(docker inspect $WORDPRESS1 | grep IPAd | awk -F'"' '{print $4}')
+
+echo "Browse to http://$WORDPRESS1_IP to access your wordpress site"
