@@ -13,6 +13,8 @@ See the following Repos for the Docker buildfiles
 * https://github.com/paulczar/docker-haproxy
 * https://github.com/paulczar/docker-mysql
 
+# Architecture
+
 ```
 
                       | :80
@@ -45,13 +47,13 @@ See the following Repos for the Docker buildfiles
 
 ```
 
-## Requirements
+# Requirements
 
 * Docker
 * Internet
 
 
-## Launch the Demo
+# Launch the Demo
 
 you may want to preload the docker containers
 
@@ -65,7 +67,7 @@ docker pull paulczar/haproxy-web
 `$ source ./run_demo`
 
 
-## Output should look like
+# Output should look like
 
 ```
 Create MySQL Tier
