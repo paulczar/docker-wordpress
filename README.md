@@ -68,14 +68,10 @@ docker pull paulczar/haproxy-web
 ## Output should look like
 
 ```
-$ source ./run_demo                     
-
 Create MySQL Tier
 -----------------
 * Create MySQL01
-WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
 * Create MySQL02
-WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
 * Sleep for two seconds for servers to come online...
 * Creat replication user
 * Export Data from MySQL01 to MySQL02
@@ -90,7 +86,6 @@ wordpress
 Create MySQL Load Balancer
 --------------------------
 * Create HAProxy-MySQL
-WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
 * Check our haproxy works
    (should show alternating server_id)
 server_id	1
@@ -101,14 +96,11 @@ server_id	2
 Create Wordpress Web Servers
 ------------------------
 * Create WordPress01
-WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
 * Create WordPress02
-WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
 
 Create Web Load Balancer
 --------------------------
 * Create HAProxy-Web
-WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
 * Check it works
 <tr><td class="e">PHP API </td><td class="v">20090626 </td></tr>
 Environment Created!
