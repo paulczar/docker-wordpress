@@ -1,6 +1,17 @@
 # Docker Web Application Demo
 
-This demo creates a tiered wordpress application that looks like the following :
+This demo is a lightweight bash script to bring together several Docker Containers to create a tiered web application like you would deploy to Amazon.   
+
+It is as simple as running `./run_demo` and takes about 5 seconds to build the whole stack,  4 seconds of which are are artificial sleeps to allow mysql to keep up.
+
+An environment like this is perfect for testing major version changes, database schema changes, etc very quickly and easily during the development process.   
+
+See the following Repos for the Docker buildfiles
+
+* https://github.com/paulczar/docker-wordpress
+* https://github.com/paulczar/docker-apache2
+* https://github.com/paulczar/docker-haproxy
+* https://github.com/paulczar/docker-mysql
 
 ```
 
