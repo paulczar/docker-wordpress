@@ -1,56 +1,128 @@
-# Docker MySQL Demo
+# Docker Web Application Demo
 
-This Demo creates two mysql docker instances and sets up master<->master replication between them.
+This demo creates a tiered wordpress application that looks like the following :
+
+```
+
+                      | :80
+                      |
+                -------------- 
+                |  HAProxy   |
+                --------------
+                   |      |
+              :80 /        \ :80
+                 /          \
+       --------------     --------------  
+       |  Apache/WP |     |  Apache/WP |   
+       --------------     --------------
+                 \           /
+            :3306 \         / :3306
+                -------------- 
+                |  HAProxy   |
+                --------------
+                   |      |
+            :3306 /        \ :3306
+                 /          \
+       --------------     --------------  
+       |  MySQL01   |     |  MySQL02   |   
+       --------------     --------------
+              ^              ^
+              |______________|
+
+              Master <-> Master
+                 Replication
+
+```
 
 ## Requirements
 
 * Docker
 * Internet
 
+
 ## Launch the Demo
 
+you may want to preload the docker containers
 
 ```
-$ source ./run_demo
+docker pull paulczar/mysql
+docker pull paulczar/apache2-wordpress
+docker pull paulczar/haproxy-mysql
+docker pull paulczar/haproxy-web
 ```
+
+`$ source ./run_demo`
 
 
 ## Output should look like
 
 ```
-$ source ./run_demo
-ID                  IMAGE                   COMMAND                CREATED                  STATUS                  PORTS
-6b1545f0ac63        paulczar/mysql:latest   mysqld_safe --server   Less than a second ago   Up Less than a second                       
-ee9ec17814fd        paulczar/mysql:latest   mysqld_safe --server   Less than a second ago   Up Less than a second                       
-wait 2 seconds for mysql to start
-Creating replication user...
-Exporting Data from MySQL01 to MySQL02...
--- Warning: Skipping the data of table mysql.event. Specify the --events option explicitly.
-Set MySQL01 as master on MySQL02...
-Set MySQL02 as master on MySQL01...
-Start Slave on both Servers...
-Create database 'omgponies' on MySQL01...
-Wait 2 seconds, then check that it exists on MySQL02...
-+--------------------+
-| Database           |
-+--------------------+
-| information_schema |
-| mysql              |
-| omgponies          |
-| performance_schema |
-| test               |
-+--------------------+
-```
+$ source ./run_demo                     
 
-* The script will create some environment variables that you can use for further testing.   see contents of script.
+Create MySQL Tier
+-----------------
+* Create MySQL01
+WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
+* Create MySQL02
+WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
+* Sleep for two seconds for servers to come online...
+* Creat replication user
+* Export Data from MySQL01 to MySQL02
+-- Warning: Skipping the data of table mysql.event. Specify the --events option explicitly.
+* Set MySQL01 as master on MySQL02
+* Set MySQL02 as master on MySQL01
+* Start Slave on both Servers
+* Create database 'wordpress' on MySQL01
+* Sleep 2 seconds, then check that database 'wordpress' exists on MySQL02
+wordpress
+
+Create MySQL Load Balancer
+--------------------------
+* Create HAProxy-MySQL
+WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
+* Check our haproxy works
+   (should show alternating server_id)
+server_id	1
+server_id	2
+server_id	1
+server_id	2
+
+Create Wordpress Web Servers
+------------------------
+* Create WordPress01
+WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
+* Create WordPress02
+WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
+
+Create Web Load Balancer
+--------------------------
+* Create HAProxy-Web
+WARNING: Docker detected local DNS server on resolv.conf. Using default external servers: [8.8.8.8 8.8.4.4]
+* Check it works
+<tr><td class="e">PHP API </td><td class="v">20090626 </td></tr>
+Environment Created!
+--------------------
+
+Browse to http://172.17.0.30 to access your wordpress site
+
+Variables available fo you :-
+
+MYSQL01_IP : 172.17.0.25
+MYSQL02_IP : 172.17.0.26
+HAPROXY_MYSQL_IP : 172.17.0.27
+WORDPRESS1_IP : 172.17.0.28
+WORDPRESS2_IP : 172.17.0.29
+HAPROXY_WEB_IP : 172.17.0.30
+
+```
 
 # Authors
 
-Paul Czarkowski - paul at paulcz dot net
+Paul Czarkowski - paul@paulcz.net
 
 # License
 
-Copyright [2013] [Paul Czarkowski]
+Copyright 2013 Paul Czarkowski
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
