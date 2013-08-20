@@ -5,7 +5,7 @@ echo "Create MySQL Tier"
 echo "-----------------"
 echo "* Create MySQL01"
 
-MYSQL01=$(docker run -d paulczar/mysql mysqld_safe --server-id=1 --log-bin=mysql-bin --log-slave-updates=1)
+MYSQL01=$(docker run -d paulczar/mysql mysqld_safe --server-id=1 --log-bin=mysql-bin --log-slave-updates=1  --auto_increment_increment=2 --auto_increment_offset=1)
 MYSQL01_IP=$(docker inspect $MYSQL01 | grep IPAd | awk -F'"' '{print $4}')
 
 echo "* Create MySQL02"
@@ -66,7 +66,7 @@ echo "* Create HAProxy-MySQL"
 
 mysql -uroot -proot -h $MYSQL01_IP -AN -e "GRANT USAGE ON *.* TO 'haproxy'@'%';"
 
-HAPROXY_MYSQL=$(docker run -d paulczar/haproxy-mysql /haproxy/start "server Primary $MYSQL01_IP:3306" "server Secondary $MYSQL02_IP:3306")
+HAPROXY_MYSQL=$(docker run -d paulczar/haproxy-mysql /haproxy/start "$MYSQL01_IP:3306,$MYSQL02_IP:3306")
 HAPROXY_MYSQL_IP=$(docker inspect $HAPROXY_MYSQL | grep IPAd | awk -F'"' '{print $4}')
 
 echo "* Check our haproxy works"
