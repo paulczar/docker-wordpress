@@ -53,6 +53,10 @@ echo "* Create database 'wordpress' on MySQL01"
 
 mysql -uroot -proot -h $MYSQL01_IP -e "create database wordpress;"
 
+echo "* Load up Site SQL data"
+
+mysql -uroot -proot -h $MYSQL01_IP wordpress < wordpress.sql
+
 echo "* Sleep 2 seconds, then check that database 'wordpress' exists on MySQL02"
 
 sleep 2
@@ -82,11 +86,11 @@ echo "Create Wordpress Web Servers"
 echo "------------------------"
 
 echo "* Create WordPress01"
-WORDPRESS1=$(docker run -d paulczar/apache2-wordpress /var/www/start $HAPROXY_MYSQL_IP)
+WORDPRESS1=$(docker run -d paulczar/apache2-wordpress /wordpress/start $HAPROXY_MYSQL_IP)
 WORDPRESS1_IP=$(docker inspect $WORDPRESS1 | grep IPAd | awk -F'"' '{print $4}')
 
 echo "* Create WordPress02"
-WORDPRESS2=$(docker run -d paulczar/apache2-wordpress /var/www/start $HAPROXY_MYSQL_IP)
+WORDPRESS2=$(docker run -d paulczar/apache2-wordpress /wordpress/start $HAPROXY_MYSQL_IP)
 WORDPRESS2_IP=$(docker inspect $WORDPRESS2 | grep IPAd | awk -F'"' '{print $4}')
 
 echo 
@@ -115,3 +119,6 @@ echo HAPROXY_MYSQL_IP : $HAPROXY_MYSQL_IP
 echo WORDPRESS1_IP    : $WORDPRESS1_IP
 echo WORDPRESS2_IP    : $WORDPRESS2_IP
 echo HAPROXY_WEB_IP   : $HAPROXY_WEB_IP
+echo
+echo you may want to run the following :-
+echo "# sudo echo \"$HAPROXY_WEB_IP   wordpress\" >> /etc/hosts"
