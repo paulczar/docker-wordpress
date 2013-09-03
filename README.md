@@ -64,7 +64,23 @@ docker pull paulczar/haproxy-mysql
 docker pull paulczar/haproxy-web
 ```
 
-`$ source ./run_demo`
+## Vagrant Dev Environment
+
+`$ vagrant up`
+
+will launch the Vagrant dev environment.    
+
+## Docker Test Environment
+
+`$ source ./docker`
+
+will deploy a test environment in your local docker
+
+## Openstack Prod Environment
+
+_needs to be the openstack docker - https://github.com/paulczar/cookbook-openstack-docker_
+
+`$ source ./openstack`
 
 
 # Output should look like
