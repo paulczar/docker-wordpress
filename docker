@@ -121,4 +121,5 @@ echo WORDPRESS2_IP    : $WORDPRESS2_IP
 echo HAPROXY_WEB_IP   : $HAPROXY_WEB_IP
 echo
 echo you may want to run the following :-
-echo "# sudo echo \"$HAPROXY_WEB_IP   wordpress\" >> /etc/hosts"
+#echo "sudo su -c 'echo \"$HAPROXY_WEB_IP   wordpress\" >> /etc/hosts'"
+echo "sudo sed -i 's/^.*wordpress.*$/$HAPROXY_WEB_IP wordpress/' /etc/hosts"

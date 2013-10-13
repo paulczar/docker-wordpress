@@ -1,5 +1,6 @@
 #!/bin/bash
 
+[[ -e openrc ]] || echo "no openrc found"; exit 1
 source openrc
 
 #echo some basic house keeping

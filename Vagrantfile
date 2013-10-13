@@ -26,8 +26,6 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder "wordpress", "/var/www"
     config.vm.network :private_network, ip: "33.33.33.33"
     config.vm.network :forwarded_port, guest: 80, host: 8080
-    config.ssh.max_tries = 40
-    config.ssh.timeout   = 120
     config.ssh.forward_agent = true
     config.vm.provision :shell, :inline => <<-SCRIPT
       apt-get update
@@ -36,7 +34,8 @@ Vagrant.configure("2") do |config|
       /usr/bin/mysqladmin create wordpress
       [[ -e /vagrant/wordpress.sql ]] && /usr/bin/mysql wordpress < /vagrant/wordpress.sql
       echo you may want to run the following :-
-      echo 'sudo echo "33.33.33.33   docker" >> /etc/hosts'
+      #echo "sudo su -c 'echo \"33.33.33.33   wordpress\" >> /etc/hosts'"
+      echo "sudo sed -i 's/^.*wordpress.*$/33.33.33.33 wordpress/' /etc/hosts"
     SCRIPT
     config.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--cpus", 2]
